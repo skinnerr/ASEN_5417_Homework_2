@@ -1,0 +1,129 @@
+\documentclass[12pt]{article}
+
+\input{../../Latex_Common/skinnerr_latex_preamble_asen5417.tex}
+
+%%
+%% DOCUMENT START
+%%
+
+\begin{document}
+
+\pagestyle{fancyplain}
+\lhead{}
+\chead{}
+\rhead{}
+\lfoot{ASEN 5417: Homework 2}
+\cfoot{\thepage}
+\rfoot{Ryan Skinner}
+
+\noindent
+{\Large Homework 2}
+\hfill
+{\large Ryan Skinner}
+\\[0.5ex]
+{\large ASEN 5417: Numerical Methods}
+\hfill
+{\large Due 2015/09/17}\\
+\hrule
+\vspace{6pt}
+
+\section{Introduction}
+
+We solve the following problems to better understand numerical techniques for solving ordinary differential equations. As will be described in the methods section, our tools primarily consist of second- and fourth-order Runge-Kutta methods, and Euler stability analysis.
+
+\subsection{Problem 1}
+
+Equations of motion for a rocket's vertical speed $v$ can be written as
+\begin{equation}
+(m_c + m_p) \frac{dv}{dt} = -(m_c + m_p) g + m_p v_e - \tfrac{1}{2} \rho v \norm{v} A C_D
+,
+\label{eq:rocket}
+\end{equation}
+where $z$ is the vertical coordinate, $v = dz/dt$ is the vertical speed, and
+\begin{equation*}
+\begin{aligned}
+m_c &= 51.02 \text{ kg} &&\text{(rocket casing mass)} \\
+g &= 9.8 \text{ m/s}^2 &&\text{(gravitational acceleration)} \\
+\rho &= 1.23 \text{ kg/m}^3 &&\text{(air density)} \\
+A &= 0.1 \text{ m}^2 &&\text{(maximum cross-sectional area)} \\
+v_e &= 360 \text{ m/s} &&\text{(exhaust speed)} \\
+C_D &= 0.15 &&\text{(drag coefficient)} \\
+m_{p0} &= 102.04 \text{ kg} &&\text{(initial propellant mass)}
+.
+\end{aligned}
+\end{equation*}
+Furthermore, the instantaneous propellant mass at time $t$ is given by
+\begin{equation}
+m_p(t) = m_{p0} - \int_0^t \dot{m}_p dt
+,
+\end{equation}
+and the time-varying burn rate is
+\begin{equation}
+\dot{m}_p =
+\frac{m_{p0}}{4}
+\cdot
+\begin{cases}
+t     & 0 \le t \le 1 \\
+1     & 1 \le t \le 4 \\
+5 - t & 4 \le t \le 5 \\
+0     & 5 \le t
+.
+\end{cases}
+\end{equation}
+
+Use a second-order Runge-Kutta (RK2) integrator with $\Delta t = 0.1 \text{ s}$ to plot $z(t)$ and $v(t)$. Use these plots to find the maximum speed, and the height and time at which it is reached; the maximum height, and the time at which it is reached; and the time and velocity when the rocket hits the ground. Check these results with those obtained from \textsc{Matlab}'s \lstinline|ODE45| solver.
+
+This problem is fairly straight-forward. An RK2 scheme is relatively easy to implement, but we will need to be careful when accounting for the time-dependence of $m_p$. Furthermore, though it is not stated in the problem, when $m_p$ reaches zero, the thrust term involving the exhaust speed $v_e$ in \eqref{eq:rocket} needs to ``turn off.''
+
+\subsection{Problem 2}
+
+Consider the stream function for a two-dimensional jet in self-similar form, which can be written as
+\begin{equation}
+f''(\eta) + f(\eta) f'(\eta) = 0 ,\qquad
+f(0) = 0 ,\qquad
+f'(0) = 1
+.
+\end{equation}
+The velocities in the jet can be obtained via
+\begin{equation}
+\frac{U}{U_0} = f'(\eta) ,\qquad
+\frac{V}{U_0} = \eta f'(\eta) - \tfrac{1}{2} f(\eta)
+.
+\end{equation}
+Using numerical integration for $0 \le \eta \le 4$, with a step size of $\Delta \eta = 0.05$, plot the quantities $U/U_0$, $V/V_0$, and $f$ as functions of $\eta$. Perform this analysis with both the second- and fourth-order Runge-Kutta methods, and compare their performance. Both solutions may be compared to those obtained from the best-fit expression
+\begin{equation}
+f(\eta) = \exp(-0.682 \eta^2)
+.
+\end{equation}
+
+\subsection{Problem 3}
+
+Show that the equation
+\begin{equation}
+y'' = -\frac{19}{4} y - 10 y' ,\qquad
+y(0) = -9 ,\qquad
+y'(0) = 0
+\end{equation}
+is moderately stiff. Use Euler stability analysis to estimate the largest step size $h_\tmax$ for which the Runge-Kutta method will be stable. Then confirm this estimate by computing $y$ using the fourth-order Runge-Kutta method with $h = \{ \tfrac{1}{2} h_\tmax, 2 h_\tmax\}$. Compare these solutions with the analytical solution.
+
+\section{Methodology}
+
+\section{Results}
+
+\section{Discussion}
+
+\section{References}
+
+No external references were used other than the course notes for this assignment.
+
+\section*{Appendix: MATLAB Code}
+The following code listings generate all figures presented in this homework assignment.
+
+%\includecode{Homework_1_Driver.m}
+
+
+
+%%
+%% DOCUMENT END
+%%
+\end{document}
