@@ -178,6 +178,12 @@ Custom RK2   & 4.80 & 325.10   & 649.86         & 27.50        & 3850.40  & 57.9
 
 \section{Discussion}
 
+\subsection*{Problem 1}
+
+Using both integration strategies, we physically see the rocket accelerate at an increasing rate as propellant is burned, and then decelerate as the rocket engine shuts down and the forces of gravity and air drag dominate its dynamics. 
+
+Agreement of time-histories of rocket velocity and altitude is strong between the 2\nd-order Runge-Kutta method we implemented and \textsc{Matlab}'s own \lstinline|ode45| solver. This holds true both visually and quantitatively, based on \figref{fig:rocket_plots} and Table~\ref{tbl:rocket} respectively. Errors between methods are within 3\% for time, within 1\% for velocity, and within 9\% for altitude. This can be attributed to two phenomena. First, \textsc{Matlab}'s integrator uses an adaptive time-step coupled with a higher-order integration scheme. It is thus able to capture the behavior that occurs during the take-off stage---and throughout the flight---more accurately. Second, errors in position are higher than errors in velocity, because errors from the velocity calculations are compounded when estimating the altitude at each time step.
+
 \section{References}
 
 No external references were used other than the course notes for this assignment.
