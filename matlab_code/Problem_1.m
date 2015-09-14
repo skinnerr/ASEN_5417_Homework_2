@@ -17,20 +17,10 @@ function [] = Problem_1()
     c.mp0   = 102.04;   % Initial propellant mass
     c.v0    = 0;        % Initial velocity
     c.z0    = 0;        % Initial altitude
-    
-%     t = linspace(-1,6,1000);
-%     x = zeros(length(t),1);
-%     for i = 1:length(t)
-%         x(i) = mp(c,t(i));
-%     end
-%     plot(t,x);
-    
-%     a = alpha(c,1)
-%     b = beta(c,1)
 
     % Initialize times at which to evaluate solution.
     t0 = 0;
-    tf = 85;
+    tf = 60;
     dt = 0.1;
     t = t0:dt:tf;
     
@@ -53,24 +43,70 @@ function [] = Problem_1()
         z(n+1) = zn + l2;
     end
     
+    % Perform validation using Matlab's ODE45.
+    t_span = [t0, tf];
+    initials = [v(1), z(1)];
+    [t_ml, sol_ml] = ode45(@(t,y) rocket(t,y,c), t_span, initials);
+    v_ml = sol_ml(:,1);
+    z_ml = sol_ml(:,2);
+    
     % Plot velocity.
     figure();
     hold on;
-    plot(t,v);
-    plot([t0,tf],[0,0],'k--');
-    xlim([t0,tf]);
+    plot(t_ml,v_ml,'DisplayName','Matlab ODE45');
+    plot(t,v,'--','DisplayName','Custom RK2');
+    legend('show');
+    plot(t_span,[0,0],'k:');
+    xlim(t_span);
     xlabel('Time (s)');
     ylabel('Velocity (m/s)');
     
     % Plot altitude.
     figure();
     hold on;
-    plot(t,z);
-    plot([t0,tf],[0,0],'k--');
-    xlim([t0,tf]);
+    plot(t_ml,z_ml,'DisplayName','Matlab ODE45');
+    plot(t,z,'--','DisplayName','Custom RK2');
+    hleg = legend('show');
+    set(hleg,'location','south');
+    plot(t_span,[0,0],'k:');
+    xlim(t_span);
     xlabel('Time (s)');
     ylabel('Altitude (m)');
-   
+    
+    % Stats on rocket flight (Custom RK2)
+    i = find(v == max(v));
+    fprintf('RK2  : Max velocity is %.2f at time %.2f and height %.2f.\n',max(v),t(i),z(i));
+    i = find(z == max(z));
+    fprintf('RK2  : Max altitude is %.2f at time %.2f.\n',max(z),t(i));
+    ignore = 100;
+    t_crash = interp1(z(ignore:end),t(ignore:end),0);
+    fprintf('RK2  : Crash occurs at time %.2f with velocity %.2f\n',t_crash,interp1(t,v,t_crash));
+    
+    % Stats on rocket flight (Matlab's ODE45)
+    i = find(v_ml == max(v_ml));
+    fprintf('ODE45: Max velocity is %.2f at time %.2f and height %.2f.\n',max(v_ml),t_ml(i),z_ml(i));
+    i = find(z_ml == max(z_ml));
+    fprintf('ODE45: Max altitude is %.2f at time %.2f.\n',max(z_ml),t_ml(i));
+    ignore = 50;
+    t_crash = interp1(z_ml(ignore:end),t_ml(ignore:end),0);
+    fprintf('ODE45: Crash occurs at time %.2f with velocity %.2f\n',t_crash,interp1(t_ml,v_ml,t_crash));
+    
+
+end
+
+function [ mp_dot ] = mp_dot ( c, t )
+% Calculates time derivative of propellant mass.
+% This is the exact value of mp(t) given in the problem statement.
+    if 0 <= t && t < 1
+        mp_dot = t;
+    elseif 1 <= t && t < 4
+        mp_dot = 1;
+    elseif 4 <= t && t < 5
+        mp_dot = 5-t;
+    else
+        mp_dot = 0;
+    end
+    mp_dot = mp_dot * c.mp0 / 4;
 end
 
 function [ mp ] = mp ( c, t )
@@ -93,10 +129,28 @@ end
 function [ a ] = alpha( c, t )
 % Calculates the time-dependent constant alpha.
     engines_on = 0 <= t && t < 5;
-    a = -c.g + (engines_on * c.ve) * mp(c,t) / (mp(c,t) + c.mc);
+    a = -c.g + (engines_on * c.ve) * mp_dot(c,t) / (mp(c,t) + c.mc);
 end
 
 function [ b ] = beta( c, t )
 % Calculates the time-dependent constant beta.
     b = -0.5 * c.rho * c.A * c.CD / (mp(c,t) + c.mc);
 end
+
+function [ dy ] = rocket( t, y, c )
+% Calculates values for ODE45-based integration of the rocket equation.
+    dy = zeros(2,1);
+    dy(1) = alpha(c,t) + beta(c,t) * y(1) * abs(y(1));
+    dy(2) = y(1);
+end
+
+
+
+
+
+
+
+
+
+
+

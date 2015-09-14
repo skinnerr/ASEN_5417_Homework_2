@@ -35,7 +35,7 @@ We solve the following problems to better understand numerical techniques for so
 
 Equations of motion for a rocket's vertical speed $v$ can be written as
 \begin{equation}
-(m_c + m_p) \frac{dv}{dt} = -(m_c + m_p) g + m_p v_e - \tfrac{1}{2} \rho v \norm{v} A C_D
+(m_c + m_p) \frac{dv}{dt} = -(m_c + m_p) g + \dot{m}_p v_e - \tfrac{1}{2} \rho v \norm{v} A C_D
 ,
 \label{eq:rocket}
 \end{equation}
@@ -71,7 +71,7 @@ t     & 0 \le t \le 1 \\
 \end{cases}
 \end{equation}
 
-Use a second-order Runge-Kutta (RK2) integrator with $\Delta t = 0.1 \text{ s}$ to plot $z(t)$ and $v(t)$. Use these plots to find the maximum speed, and the height and time at which it is reached; the maximum height, and the time at which it is reached; and the time and velocity when the rocket hits the ground. Check these results with those obtained from \textsc{Matlab}'s \lstinline|ODE45| solver.
+Use a second-order Runge-Kutta (RK2) integrator with $\Delta t = 0.1 \text{ s}$ to plot $z(t)$ and $v(t)$. Use these plots to find the maximum speed, and the height and time at which it is reached; the maximum height, and the time at which it is reached; and the time and velocity when the rocket hits the ground. Check these results with those obtained from \textsc{Matlab}'s \lstinline|ode45| solver.
 
 This problem is fairly straight-forward. An RK2 scheme is relatively easy to implement, but we will need to be careful when accounting for the time-dependence of $m_p$. Furthermore, though it is not stated in the problem, when $m_p$ reaches zero, the thrust term involving the exhaust speed $v_e$ in \eqref{eq:rocket} needs to ``turn off.''
 
@@ -108,7 +108,73 @@ is moderately stiff. Use Euler stability analysis to estimate the largest step s
 
 \section{Methodology}
 
+\subsection{Problem 1}
+
+We first re-write the system of equations governing rocket altitude as
+\begin{equation}
+\begin{aligned}
+\frac{dz}{dt} &= f(t,v) &&= v
+\\
+\frac{dv}{dt} &= g(t,v) &&= \underbrace{-g + T \frac{\dot{m}_p v_e}{(m_c + m_p)}}_{\alpha(t)} + \underbrace{\frac{- \rho A C_D}{2 (m_c + m_p)}}_{\beta(t)} v \norm{v}
+,
+\end{aligned}
+\label{eq:rocket_rewritten}
+\end{equation}
+where $\alpha$ and $\beta$ are constants that directly depend only on time, and $T$ toggles the thrust term on and off based on whether the rocket is still burning propellant.
+
+Given the initial values of our variables at $t=0$, the second-order Runge-Kutta method allows us to integrate the system of equations \eqref{eq:rocket_rewritten} with respect to time using a time step $h$. At a given time $t_n$, the velocity and position at the next time step, $v_{n+1}$ and $z_{n+1}$, can be approximated by applying the following formulae to each successive time step: calculating
+\begin{equation}
+\begin{aligned}
+k_1 &= h f(t_n,v_n) &&= h v_n
+\\
+l_1 &= h g(t_n,v_n) &&= h \left[ \alpha(t_n) + \beta(t_n) v_n \norm{v_n} \right]
+\\
+k_2 &= h f(t_n + h/2, v_n + k_1 / 2) &&= h \left[ v_n + k_1/2\right]
+\\
+l_2 &= h g(t_n + h/2, v_n + l_1 / 2) &&= h \left[ \alpha(t_n + h/2) + \beta(t_n + h/2) (v_n + l_1 / 2) \norm{v_n + l_1 / 2} \right]
+\end{aligned}
+\end{equation}
+and then updating the next step's values of $z$ and $v$ as
+\begin{equation}
+\begin{aligned}
+z_{n+1} &= z_n + k_2
+\\
+v_{n+1} &= v_n + l_2
+.
+\end{aligned}
+\end{equation}
+
 \section{Results}
+
+\subsection{Problem 1}
+
+Plots of the velocity and altitude time histories are presented in \figref{fig:rocket_plots}. Statistics on notable flight events are shown in Table~\ref{tbl:rocket}.
+
+\begin{figure}[t]
+\begin{center}
+\includegraphics[width=0.49\textwidth]{rocket_velocity.eps}
+\includegraphics[width=0.49\textwidth]{rocket_altitude.eps}
+\\[6pt]
+\caption{Comparison of our own 2\nd-order Runge-Kutta scheme to \textsc{Matlab}'s \lstinline|ode45| solver, for the rocket velocity and altitude.}
+\label{fig:rocket_plots}
+\end{center}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\begin{tabular}{llllllll}
+\toprule
+Integrator   & \multicolumn{3}{c}{Max Velocity} & \multicolumn{2}{c}{Max Altitude} & \multicolumn{2}{c}{Crash} \\
+\midrule
+~            & Time & Velocity & Altitude       & Time         & Altitude & Time  & Velocity \\
+Custom RK2   & 4.80 & 325.10   & 649.86         & 27.50        & 3850.40  & 57.98 & -199.65  \\
+\textsc{Matlab} \lstinline|ode45| & 4.67 & 327.01   & 597.32         & 27.36        & 3726.67  & 58.40 & -200.27 \\
+\bottomrule
+\end{tabular}
+\\[6pt]
+\caption{Comparison of notable flight events between integration methods.}
+\label{tbl:rocket}
+\end{table}
 
 \section{Discussion}
 
@@ -119,7 +185,7 @@ No external references were used other than the course notes for this assignment
 \section*{Appendix: MATLAB Code}
 The following code listings generate all figures presented in this homework assignment.
 
-%\includecode{Homework_1_Driver.m}
+\includecode{Problem_1.m}
 
 
 
