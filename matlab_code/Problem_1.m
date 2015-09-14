@@ -91,7 +91,6 @@ function [] = Problem_1()
     t_crash = interp1(z_ml(ignore:end),t_ml(ignore:end),0);
     fprintf('ODE45: Crash occurs at time %.2f with velocity %.2f\n',t_crash,interp1(t_ml,v_ml,t_crash));
     
-
 end
 
 function [ mp_dot ] = mp_dot ( c, t )
@@ -143,14 +142,3 @@ function [ dy ] = rocket( t, y, c )
     dy(1) = alpha(c,t) + beta(c,t) * y(1) * abs(y(1));
     dy(2) = y(1);
 end
-
-
-
-
-
-
-
-
-
-
-
