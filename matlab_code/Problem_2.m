@@ -1,7 +1,7 @@
 function [] = Problem_2()
 
     %%%%%%
-    % Solves the stream function for a 2D jet in self-similar form, using RK2 and RK4.
+    % Solves the stream function for a 2D jet in self-similar form, using RK2 and ode45.
     %   Ryan Skinner, September 2015
     %%%
     
@@ -11,7 +11,7 @@ function [] = Problem_2()
     eta0 = 0;
     etaf = 4;
     deta = 0.05;
-    rk2.eta  = [eta0:deta:etaf]';
+    rk2.eta  = (eta0:deta:etaf)';
     
     % Initialize velocities and positions.
     rk2.f   = zeros(length(rk2.eta),1);
@@ -48,33 +48,31 @@ function [] = Problem_2()
     o45.uou0 = o45.fp;
     o45.vou0 = o45.eta .* o45.fp - 0.5 * o45.f;
     
+    
+    % Calculate solution using best-fit expression.
+    best.eta = rk2.eta;
+    best.f   = 1.07313 * erf(0.825833 * best.eta);
+    best.fp  =                     exp(-0.682*rk2.eta.^2);
+    best.fpp = -0.682 * rk2.eta .* exp(-0.682*rk2.eta.^2);
+    best.uou0 = best.fp;
+    best.vou0 = best.eta .* best.fp - 0.5 * best.f;
+    
     % Plot fields.
     figure();
     hold on;
-    plot(rk2.eta,rk2.uou0,      'DisplayName','RK2: U/U_0');
-    plot(o45.eta,o45.uou0, '--','DisplayName','O45: U/U_0');
-    plot(rk2.eta,rk2.vou0,      'DisplayName','RK2: V/U_0');
-    plot(o45.eta,o45.vou0, '--','DisplayName','O45: V/U_0');
-    plot(rk2.eta,rk2.f   ,      'DisplayName','RK2: f');
-    plot(o45.eta,o45.f   ,'k--','DisplayName','O45: f');
-    plot(rk2.eta,exp(-0.692*rk2.eta.^2),'DisplayName','BEST FIT (f)');
+    plot(rk2.eta,  rk2.uou0,        'DisplayName', 'U/U_0 (RK2)');
+    plot(o45.eta,  o45.uou0,  '--', 'DisplayName', 'U/U_0 (ode45)');
+    plot(best.eta, best.uou0, '-.', 'DisplayName', 'U/U_0 (Best Fit)');
+    plot(rk2.eta,  rk2.vou0,        'DisplayName', 'V/U_0 (RK2)');
+    plot(o45.eta,  o45.vou0,  '--', 'DisplayName', 'V/U_0 (ode45)');
+    plot(best.eta, best.vou0, '-.', 'DisplayName', 'V/U_0 (Best Fit)');
+    plot(rk2.eta,  rk2.f,           'DisplayName', 'f (RK2)');
+    plot(o45.eta,  o45.f,     '--', 'DisplayName', 'f (ode45)');
+    plot(best.eta, best.f,    '-.', 'DisplayName', 'f (Best Fit)');
     hleg = legend('show');
     set(hleg, 'location', 'southwest');
     xlim([eta0,etaf]);
     xlabel('\eta');
-    
-    
-%     % Calculate actual solution using best-fit expression.
-%     best.eta = rk2.eta;
-%     best.f   =                      exp(-0.682*rk2.eta.^2);
-%     best.fp  = -0.682   * eta    .* exp(-0.682*rk2.eta.^2);
-%     best.fpp =  0.682^2 * eta.^2 .* exp(-0.682*rk2.eta.^2);
-%     figure();
-%     hold on;
-%     plot(rk2.eta,best.f,'DisplayName','f');
-%     plot(rk2.eta,best.fp,'DisplayName','f''');
-%     plot(rk2.eta,best.fpp,'DisplayName','f''''');
-%     legend('show');
     
 end
 

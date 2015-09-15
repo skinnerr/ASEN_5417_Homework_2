@@ -41,6 +41,15 @@ function [] = Problem_1()
         l2 = dt * (vn + l1/2);
         v(n+1) = vn + k2;
         z(n+1) = zn + l2;
+        % Prevent rocket from falling into the ground before thrust overcomes gravity.
+        if n * dt < 3
+            if v(n+1) < 0
+                v(n+1) = 0;
+            end
+            if z(n+1) < 0
+                z(n+1) = 0;
+            end
+        end
     end
     
     % Perform validation using Matlab's ODE45.
@@ -141,4 +150,23 @@ function [ dy ] = rocket( t, y, c )
     dy = zeros(2,1);
     dy(1) = alpha(c,t) + beta(c,t) * y(1) * abs(y(1));
     dy(2) = y(1);
+    % Prevent rocket from falling into the ground before thrust overcomes gravity.
+    if t < 3
+        if dy(1) < 0
+            dy(1) = 0;
+        end
+        if dy(2) < 0
+            dy(2) = 0;
+        end
+    end
 end
+
+
+
+
+
+
+
+
+
+
