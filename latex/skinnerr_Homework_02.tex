@@ -89,6 +89,7 @@ f'(0) = 1 ,\qquad
 \Rightarrow \;
 f''(0) = 0
 .
+\label{eq:prob2}
 \end{equation}
 The velocities in the jet can be obtained via
 \begin{equation}
@@ -164,15 +165,11 @@ For early time steps, say $t < 3$, we ensure that the rocket does not fall throu
 
 \subsection{Problem 2}
 
-We are able to use an analogous method to Problem 1 for the RK2 integrator, and we choose \textsc{Matlab}'s \lstinline|ode45| function as our higher-order integrator. Normalized velocities are calculated at each value of $\eta$ using the results of integration according to \eqref{eq:prob2_velocities}. The best-fit expression \eqref{eq:prob2_bestfit} has analytical solutions for $f$ and $f''$ given by
+We are able to use an analogous method to Problem 1 for the RK2 integrator, and we choose \textsc{Matlab}'s \lstinline|ode45| function as our higher-order integrator. Normalized velocities are calculated at each value of $\eta$ using the results of integration according to \eqref{eq:prob2_velocities}. The best-fit expression \eqref{eq:prob2_bestfit} has an analytical solution for $f$ given by
 \begin{equation}
-\begin{aligned}
-f(\eta) &= \sqrt{\pi / 4 \gamma} \erf(\sqrt{\gamma} \eta)
-\\
-f''(\eta) &= \gamma \eta \exp(\gamma \eta^2)
-\end{aligned}
+f(\eta) = \sqrt{\pi / 4 \gamma} \erf(\sqrt{\gamma} \eta)
 \end{equation}
-assuming the constant of integration for $f(\eta)$ is zero.
+assuming the constant of integration for $f(\eta)$ is zero. We integrate the variables $f(\eta)$ and $f'(\eta)$, and at each time step use the definition from \eqref{eq:prob2} to calculate $f''(\eta)$.
 
 \subsection{Problem 3}
 
@@ -272,6 +269,8 @@ Custom RK2                        & 4.80 & 325.74   & 653.47  & 27.50  & 3861.61
 \end{center}
 \end{figure}
 
+Results of for the stream function and normalized velocities as a function of the similarity variable $\eta$ are presented in \figref{fig:prob2}.
+
 \subsection{Problem 3}
 
 \begin{figure}[t]
@@ -290,8 +289,8 @@ Custom RK2                        & 4.80 & 325.74   & 653.47  & 27.50  & 3861.61
 Method & $y(10)$ \\
 \midrule
 Analytical                  & -0.06 \\
-RK4 ($2h_\tmax$)            & -0.98 \\
 RK4 ($\tfrac{1}{2}h_\tmax$) & -4.94 \\
+RK4 ($2h_\tmax$)            & 8.2$\times10^{13}$ \\
 \bottomrule
 \end{tabular}
 \\[6pt]

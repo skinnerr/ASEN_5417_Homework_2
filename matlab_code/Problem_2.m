@@ -50,7 +50,6 @@ function [] = Problem_2()
     bst.eta = rk2.eta;
     bst.f   = 1.07313 * erf(0.825833 * bst.eta);
     bst.fp  =                     exp(-0.682*bst.eta.^2);
-    bst.fpp = -0.682 * bst.eta .* exp(-0.682*bst.eta.^2);
     bst.uou0 = bst.fp;
     bst.vou0 = bst.eta .* bst.fp - 0.5 * bst.f;
     
@@ -58,14 +57,14 @@ function [] = Problem_2()
     figure();
     hold on;
     plot(rk2.eta, rk2.uou0,  'k-', 'DisplayName', 'U/U_0 (RK2)');
-    plot(o45.eta, o45.uou0,  'b-', 'DisplayName', 'U/U_0 (ode45)');
-    plot(bst.eta, bst.uou0,  'r-', 'DisplayName', 'U/U_0 (Best Fit)');
+    plot(o45.eta, o45.uou0,  'r-', 'DisplayName', 'U/U_0 (ode45)');
+    plot(bst.eta, bst.uou0,  'b-', 'DisplayName', 'U/U_0 (Best Fit)');
     plot(rk2.eta, rk2.vou0, 'k--', 'DisplayName', 'V/U_0 (RK2)');
-    plot(o45.eta, o45.vou0, 'b--', 'DisplayName', 'V/U_0 (ode45)');
-    plot(bst.eta, bst.vou0, 'r--', 'DisplayName', 'V/U_0 (Best Fit)');
+    plot(o45.eta, o45.vou0, 'r--', 'DisplayName', 'V/U_0 (ode45)');
+    plot(bst.eta, bst.vou0, 'b--', 'DisplayName', 'V/U_0 (Best Fit)');
     plot(rk2.eta, rk2.f,    'k-.', 'DisplayName', 'f (RK2)');
-    plot(o45.eta, o45.f,    'b-.', 'DisplayName', 'f (ode45)');
-    plot(bst.eta, bst.f,    'r-.', 'DisplayName', 'f (Best Fit)');
+    plot(o45.eta, o45.f,    'r-.', 'DisplayName', 'f (ode45)');
+    plot(bst.eta, bst.f,    'b-.', 'DisplayName', 'f (Best Fit)');
     hleg = legend('show');
     set(hleg, 'location', 'eastoutside');
     xlim([eta0,etaf]);
