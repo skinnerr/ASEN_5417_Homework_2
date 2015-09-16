@@ -25,16 +25,14 @@ function [] = Problem_2()
     for n = 1:(length(rk2.eta)-1)
         f   = rk2.f(n);    % k
         fp  = rk2.fp(n);   % l
-        fpp = rk2.fpp(n);  % m
+        fpp = rk2.fpp(n);
         k1 = deta * fp;
         l1 = deta * fpp;
-        m1 = deta * -(f * fp);
-        k2 = deta * (fp + l1/2);
-        l2 = deta * (fpp + m1/2);
-        m2 = deta * -(f + k1/2) * (fp + l1/2);
+        k2 = deta * (fp + k1/2);
+        l2 = deta * (fpp + l1/2);
         rk2.f(n+1)   = f + k2;
         rk2.fp(n+1)  = fp + l2;
-        rk2.fpp(n+1) = fpp + m2;
+        rk2.fpp(n+1) = -rk2.f(n+1) * rk2.fp(n+1);
     end
     rk2.uou0 = rk2.fp;
     rk2.vou0 = rk2.eta .* rk2.fp - 0.5 * rk2.f;
@@ -59,17 +57,17 @@ function [] = Problem_2()
     % Plot fields.
     figure();
     hold on;
-    plot(rk2.eta, rk2.uou0,       'DisplayName', 'U/U_0 (RK2)');
-    plot(o45.eta, o45.uou0, '--', 'DisplayName', 'U/U_0 (ode45)');
-    plot(bst.eta, bst.uou0, '-.', 'DisplayName', 'U/U_0 (Best Fit)');
-    plot(rk2.eta, rk2.vou0,       'DisplayName', 'V/U_0 (RK2)');
-    plot(o45.eta, o45.vou0, '--', 'DisplayName', 'V/U_0 (ode45)');
-    plot(bst.eta, bst.vou0, '-.', 'DisplayName', 'V/U_0 (Best Fit)');
-    plot(rk2.eta, rk2.f,          'DisplayName', 'f (RK2)');
-    plot(o45.eta, o45.f,    '--', 'DisplayName', 'f (ode45)');
-    plot(bst.eta, bst.f,    '-.', 'DisplayName', 'f (Best Fit)');
+    plot(rk2.eta, rk2.uou0,  'k-', 'DisplayName', 'U/U_0 (RK2)');
+    plot(o45.eta, o45.uou0,  'b-', 'DisplayName', 'U/U_0 (ode45)');
+    plot(bst.eta, bst.uou0,  'r-', 'DisplayName', 'U/U_0 (Best Fit)');
+    plot(rk2.eta, rk2.vou0, 'k--', 'DisplayName', 'V/U_0 (RK2)');
+    plot(o45.eta, o45.vou0, 'b--', 'DisplayName', 'V/U_0 (ode45)');
+    plot(bst.eta, bst.vou0, 'r--', 'DisplayName', 'V/U_0 (Best Fit)');
+    plot(rk2.eta, rk2.f,    'k-.', 'DisplayName', 'f (RK2)');
+    plot(o45.eta, o45.f,    'b-.', 'DisplayName', 'f (ode45)');
+    plot(bst.eta, bst.f,    'r-.', 'DisplayName', 'f (Best Fit)');
     hleg = legend('show');
-    set(hleg, 'location', 'southwest');
+    set(hleg, 'location', 'eastoutside');
     xlim([eta0,etaf]);
     ylim([-1,1.5]);
     xlabel('\eta');
