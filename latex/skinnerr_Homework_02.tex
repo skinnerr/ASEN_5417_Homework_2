@@ -95,12 +95,15 @@ The velocities in the jet can be obtained via
 \frac{U}{U_0} = f'(\eta) ,\qquad
 \frac{V}{U_0} = \eta f'(\eta) - \tfrac{1}{2} f(\eta)
 .
+\label{eq:prob2_velocities}
 \end{equation}
 Using numerical integration for $0 \le \eta \le 4$, with a step size of $\Delta \eta = 0.05$, plot the quantities $U/U_0$, $V/V_0$, and $f$ as functions of $\eta$. Perform this analysis with both the second- (custom) and fourth-order (\lstinline|ode45|) Runge-Kutta methods, and compare their performance. Both solutions may be compared to those obtained from the best-fit expression
 \begin{equation}
-f'(\eta) = \exp(-0.682 \eta^2)
-.
+f'(\eta) = \exp(\gamma \eta^2)
+,
+\label{eq:prob2_bestfit}
 \end{equation}
+where $\gamma = -0.0692$.
 
 \subsection{Problem 3}
 
@@ -160,6 +163,16 @@ v_{n+1} &= v_n + l_2
 For early time steps, say $t < 3$, we ensure that the rocket does not fall through the launch pad by setting $v_{n+1}$ and $z_{n+1}$ to zero if they are negative after the RK2 iteration.
 
 \subsection{Problem 2}
+
+We are able to use an analogous method to Problem 1 for the RK2 integrator, and we choose \textsc{Matlab}'s \lstinline|ode45| function as our higher-order integrator. Normalized velocities are calculated at each value of $\eta$ using the results of integration according to \eqref{eq:prob2_velocities}. The best-fit expression \eqref{eq:prob2_bestfit} has analytical solutions for $f$ and $f''$ given by
+\begin{equation}
+\begin{aligned}
+f(\eta) &= \sqrt{\pi / 4 \gamma} \erf(\sqrt{\gamma} \eta)
+\\
+f''(\eta) &= \gamma \eta \exp(\gamma \eta^2)
+\end{aligned}
+\end{equation}
+assuming the constant of integration for $f(\eta)$ is zero.
 
 \subsection{Problem 3}
 
@@ -250,6 +263,15 @@ Custom RK2                        & 4.80 & 325.74   & 653.47  & 27.50  & 3861.61
 
 \subsection{Problem 2}
 
+\begin{figure}[t]
+\begin{center}
+\includegraphics[width=\textwidth]{prob2.eps}
+\\[6pt]
+\caption{}
+\label{fig:prob2}
+\end{center}
+\end{figure}
+
 \subsection{Problem 3}
 
 \begin{figure}[t]
@@ -257,9 +279,25 @@ Custom RK2                        & 4.80 & 325.74   & 653.47  & 27.50  & 3861.61
 \includegraphics[width=\textwidth]{prob3.eps}
 \\[6pt]
 \caption{Comparison of solutions between our 4\nd-order Runge-Kutta scheme with step sizes $h = \{ \tfrac{1}{2} h_\tmax, 2 h_\tmax \}$, and the analytical expression \eqref{eq:prob3_analytic}.}
-\label{fig:rocket_plots}
+\label{fig:prob3}
 \end{center}
 \end{figure}
+
+\begin{table}[t]
+\centering
+\begin{tabular}{ll}
+\toprule
+Method & $y(10)$ \\
+\midrule
+Analytical                  & -0.06 \\
+RK4 ($2h_\tmax$)            & -0.98 \\
+RK4 ($\tfrac{1}{2}h_\tmax$) & -4.94 \\
+\bottomrule
+\end{tabular}
+\\[6pt]
+\caption{Comparison of $y(10)$ between 4\th-order Runge-Kutta method with different step sizes and analytical solution.}
+\label{tbl:prob3}
+\end{table}
 
 The solution to \eqref{eq:prob3} is
 \begin{equation}
@@ -274,7 +312,7 @@ h_\tmax = \frac{4}{19}
 .
 \end{equation}
 
-A plot of the integration is presente
+A plot of the integration is presented in \figref{fig:prob3}, and the values of $y(10)$ are shown in Table~\ref{tbl:prob3}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

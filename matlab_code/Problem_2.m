@@ -67,10 +67,11 @@ function [] = Problem_2()
     plot(bst.eta, bst.vou0, '-.', 'DisplayName', 'V/U_0 (Best Fit)');
     plot(rk2.eta, rk2.f,          'DisplayName', 'f (RK2)');
     plot(o45.eta, o45.f,    '--', 'DisplayName', 'f (ode45)');
-    plot(bst.eta, bst.f,    '-.', 'DisplayName', 'f (Best Fit)');
+%     plot(bst.eta, bst.f,    '-.', 'DisplayName', 'f (Best Fit)');
     hleg = legend('show');
     set(hleg, 'location', 'southwest');
     xlim([eta0,etaf]);
+    ylim([-1,1.5]);
     xlabel('\eta');
     
 end
