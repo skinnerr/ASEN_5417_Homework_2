@@ -40,11 +40,11 @@ function [] = Problem_2()
     rk2.vou0 = rk2.eta .* rk2.fp - 0.5 * rk2.f;
     
     % Repeat integration using a higher-order method (ode45).
-    [T, Y] = ode45(@stream, [0,4], [0,1,0]);
+    [T, Y] = ode45(@stream, [0,4], [0,1]);
     o45.eta = T;
     o45.f   = Y(:,1);
     o45.fp  = Y(:,2);
-    o45.fpp = Y(:,3);
+    o45.fpp = -o45.f .* o45.fp;
     o45.uou0 = o45.fp;
     o45.vou0 = o45.eta .* o45.fp - 0.5 * o45.f;
     
@@ -67,7 +67,7 @@ function [] = Problem_2()
     plot(bst.eta, bst.vou0, '-.', 'DisplayName', 'V/U_0 (Best Fit)');
     plot(rk2.eta, rk2.f,          'DisplayName', 'f (RK2)');
     plot(o45.eta, o45.f,    '--', 'DisplayName', 'f (ode45)');
-%     plot(bst.eta, bst.f,    '-.', 'DisplayName', 'f (Best Fit)');
+    plot(bst.eta, bst.f,    '-.', 'DisplayName', 'f (Best Fit)');
     hleg = legend('show');
     set(hleg, 'location', 'southwest');
     xlim([eta0,etaf]);
@@ -77,8 +77,7 @@ function [] = Problem_2()
 end
 
 function dy = stream(~, y)
-    dy = zeros(3,1);
+    dy = zeros(2,1);
     dy(1) = y(2);
-    dy(2) = y(3);
-    dy(3) = -y(1)*y(2);
+    dy(2) = -y(1)*y(2);
 end
