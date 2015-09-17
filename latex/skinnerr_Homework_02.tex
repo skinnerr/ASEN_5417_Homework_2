@@ -223,7 +223,7 @@ For the 4\th-order Runge-Kutta method, at each successive time step $t_n$ we cal
 \mathbf{k}_4 &= h f(t_n + \tfrac{1}{2} h, \mathbf{y}_n + \mathbf{k}_3)
 \end{aligned}
 \end{equation}
-where $\mathbf{y}_n$ is a vector of solution variables evaluated at time $t_n$, and $\mathbf{k}_i$ is a vector of intermediate values for each variable represented by $\mathbf{y}_n$. Finally, we update the next step's values of $z$ and $v$ as
+where $\mathbf{y}_n$ is a vector of solution variables evaluated at time $t_n$, and $\mathbf{k}_i$ is a vector of intermediate values for each variable represented by $\mathbf{y}_n$. Finally, we update the next step's values as
 \begin{equation}
 \begin{aligned}
 \mathbf{y}_{n+1} &= \mathbf{y}_n + \tfrac{1}{6} \left( \mathbf{k}_1 + 2 \mathbf{k}_2 + 2 \mathbf{k}_3 + \mathbf{k}_4 \right)
