@@ -33,7 +33,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-We solve the following problems to better understand numerical techniques for solving ordinary differential equations. As will be described in the methods section, our tools primarily consist of second- and fourth-order Runge-Kutta methods, and Euler stability analysis.
+We solve the following problems to better understand numerical techniques for solving initial value problems governed by ordinary differential equations. As will be described in the methods section, our tools primarily consist of second- (RK2) and fourth-order (RK4) Runge-Kutta methods, as well as Euler stability analysis.
 
 \subsection{Problem 1}
 
@@ -137,9 +137,17 @@ We first re-write the system of equations governing rocket altitude as
 \end{aligned}
 \label{eq:rocket_rewritten}
 \end{equation}
-where $\alpha$ and $\beta$ are constants that directly depend only on time, and $T$ toggles the thrust term on and off based on whether the rocket is still burning propellant. In the \textsc{Matlab} code, the functions that calculate $\alpha(t)$ and $\beta(t)$ call subsequent functions to calculate $m_p(t)$ and $\dot{m}_p(t)$.
+where $\alpha$ and $\beta$ are constants that directly depend only on time, and
+\begin{equation}
+T =
+\begin{cases}
+1 & 0 \le t < 5 \\
+0 & \text{all other $t$}
+\end{cases}
+\end{equation}
+toggles the thrust term on and off based on whether the rocket engines are on. In the \textsc{Matlab} code, the functions that calculate $\alpha(t)$ and $\beta(t)$ call subsequent functions to calculate $m_p(t)$ and $\dot{m}_p(t)$.
 
-Given the initial values of our variables at $t=0$, the 2\nd-order Runge-Kutta method allows us to integrate the system of equations \eqref{eq:rocket_rewritten} with respect to time using a time step $h$. At a given time $t_n$, the velocity and position at the next time step, $v_{n+1}$ and $z_{n+1}$, can be approximated by applying the following formulae to each successive time step: calculating
+Given the initial values of our variables at $t=0$, the 2\nd-order Runge-Kutta method allows us to integrate the system of equations \eqref{eq:rocket_rewritten} with respect to time using a time step $h$. At a given time $t_n$, the velocity and position at the next time step, $v_{n+1}$ and $z_{n+1}$, can be approximated by, at each successive time step, calculating
 \begin{equation}
 \begin{aligned}
 k_1 &= h f(t_n, z_n, v_n)
@@ -169,7 +177,7 @@ We are able to use an analogous method to Problem 1 for the RK2 integrator, and 
 \begin{equation}
 f(\eta) = \sqrt{\pi / 4 \gamma} \erf(\sqrt{\gamma} \eta)
 \end{equation}
-assuming the constant of integration for $f(\eta)$ is zero. We integrate the variables $f(\eta)$ and $f'(\eta)$, and at each time step use the definition from \eqref{eq:prob2} to calculate $f''(\eta)$.
+where constant of integration for $f(\eta)$ must be zero to match the initial condition. We integrate the variables $f(\eta)$ and $f'(\eta)$, and at each time step use the definition from \eqref{eq:prob2} to calculate $f''(\eta)$.
 
 \subsection{Problem 3}
 
@@ -195,6 +203,7 @@ y'
 0 & 1 \\
 -\frac{19}{4} & -10
 \end{bmatrix}
+,
 \end{equation}
 by finding the eigenvalues $\lambda_i$ of $\mathbf{A}$. For a forward Euler method at least, the maximum step size for which a numerical solution is stable is given by
 \begin{equation}
@@ -217,7 +226,7 @@ For the 4\th-order Runge-Kutta method, at each successive time step $t_n$ we cal
 where $\mathbf{y}_n$ is a vector of solution variables evaluated at time $t_n$, and $\mathbf{k}_i$ is a vector of intermediate values for each variable represented by $\mathbf{y}_n$. Finally, we update the next step's values of $z$ and $v$ as
 \begin{equation}
 \begin{aligned}
-\mathbf{y}_{n+1} &= \mathbf{y}_n + \tfrac{1}{6} \mathbf{k}_1 + \tfrac{1}{3} \mathbf{k}_2 + \tfrac{1}{3} \mathbf{k}_3 + \tfrac{1}{6} \mathbf{k}_4
+\mathbf{y}_{n+1} &= \mathbf{y}_n + \tfrac{1}{6} \left( \mathbf{k}_1 + 2 \mathbf{k}_2 + 2 \mathbf{k}_3 + \mathbf{k}_4 \right)
 .
 \end{aligned}
 \end{equation}
@@ -232,7 +241,7 @@ where $\mathbf{y}_n$ is a vector of solution variables evaluated at time $t_n$, 
 
 Plots of the velocity and altitude time histories are presented in \figref{fig:rocket_plots}. Statistics on notable flight events are shown in Table~\ref{tbl:rocket}.
 
-\begin{figure}[t]
+\begin{figure}[h!]
 \begin{center}
 \includegraphics[width=0.49\textwidth]{rocket_velocity.eps}
 \includegraphics[width=0.49\textwidth]{rocket_altitude.eps}
@@ -242,7 +251,7 @@ Plots of the velocity and altitude time histories are presented in \figref{fig:r
 \end{center}
 \end{figure}
 
-\begin{table}[t]
+\begin{table}[h!]
 \centering
 \begin{tabular}{llllllll}
 \toprule
@@ -263,8 +272,8 @@ Custom RK2                        & 4.80 & 325.74   & 653.47  & 27.50  & 3861.61
 \begin{figure}[t]
 \begin{center}
 \includegraphics[width=\textwidth]{prob2.eps}
-\\[6pt]
-\caption{}
+\\
+\caption{Plots of the stream function $f$ and the normalized velocities $U/U_0$ and $V/V_0$ as a function of the similarity variable $\eta$, using two different integration methods and the experimentally-determined best fit for $f'(\eta)$.}
 \label{fig:prob2}
 \end{center}
 \end{figure}
@@ -273,45 +282,37 @@ Results of for the stream function and normalized velocities as a function of th
 
 \subsection{Problem 3}
 
-\begin{figure}[t]
-\begin{center}
-\includegraphics[width=\textwidth]{prob3.eps}
-\\[6pt]
-\caption{Comparison of solutions between our 4\nd-order Runge-Kutta scheme with step sizes $h = \{ \tfrac{1}{2} h_\tmax, 2 h_\tmax \}$, and the analytical expression \eqref{eq:prob3_analytic}.}
-\label{fig:prob3}
-\end{center}
-\end{figure}
-
-\begin{table}[t]
-\centering
-\begin{tabular}{ll}
-\toprule
-Method & $y(10)$ \\
-\midrule
-Analytical                  & -0.06 \\
-RK4 ($\tfrac{1}{2}h_\tmax$) & -4.94 \\
-RK4 ($2h_\tmax$)            & 8.2$\times10^{13}$ \\
-\bottomrule
-\end{tabular}
-\\[6pt]
-\caption{Comparison of $y(10)$ between 4\th-order Runge-Kutta method with different step sizes and analytical solution.}
-\label{tbl:prob3}
-\end{table}
-
-The solution to \eqref{eq:prob3} is
+The analytical solution to \eqref{eq:prob3} is
 \begin{equation}
-y = -\frac{19}{2} \exp(-x/2) + \frac{1}{2} \exp(-19x/2)
+y = -\frac{19}{2} \exp \left( \frac{-x}{2} \right) + \frac{1}{2} \exp \left( \frac{-19x}{2} \right)
 .
 \label{eq:prob3_analytic}
 \end{equation}
+Since the first exponent has a characteristic time scale of 2, and the second has a characteristic time scale of 2/19, we conclude that the ODE is moderately stiff. Put simply, the second exponential term decays approximately $20\times$ more rapidly than the first, and it will be somewhat difficult to capture both time scales accurately with a fixed step size.
 
-Euler stability analysis yields $\lambda = \{ \tfrac{1}{2}, \tfrac{19}{2} \}$, and thus our estimate of the largest value of $h$ for which we expect the solution to be stable is
+Euler stability analysis yields eigenvalues of $\lambda = \{ \tfrac{-1}{2}, \tfrac{-19}{2} \}$, and thus our estimate of the largest value of $h$ for which we expect the solution to be stable is
 \begin{equation}
 h_\tmax = \frac{4}{19}
 .
 \end{equation}
 
-A plot of the integration is presented in \figref{fig:prob3}, and the values of $y(10)$ are shown in Table~\ref{tbl:prob3}.
+Values of $y(10)$ are shown in Table~\ref{tbl:prob3}.
+
+\begin{figure}[h!]
+\floatbox[{\capbeside\thisfloatsetup{capbesideposition={right,center},capbesidewidth=8cm}}]{table}[\FBwidth]
+{\caption{Comparison of $y(10)$ between the analytical solution and the 4\th-order Runge-Kutta method with different step sizes.}\label{tbl:prob3}}
+{
+	\begin{tabular}{ll}
+	\toprule
+	Method & $y(10)$ \\
+	\midrule
+	Analytical                  & -0.0640 \\
+	RK4 ($\tfrac{1}{2}h_\tmax$) & -0.0419 \\
+	RK4 ($2h_\tmax$)            & 8.2059$\times10^{13}$ \\
+	\bottomrule
+	\end{tabular}
+}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -323,13 +324,19 @@ A plot of the integration is presented in \figref{fig:prob3}, and the values of 
 
 Using both integration strategies, we physically see the rocket accelerate at an increasing rate as propellant is burned, and then decelerate as the rocket engine shuts down and the forces of gravity and air drag dominate its dynamics. 
 
-Agreement of time-histories of rocket velocity and altitude is strong between the 2\nd-order Runge-Kutta method we implemented and \textsc{Matlab}'s own \lstinline|ode45| solver. This holds true both visually and quantitatively, based on \figref{fig:rocket_plots} and Table~\ref{tbl:rocket} respectively. Errors between methods are within 3\% for time, within 1\% for velocity, and within 9\% for altitude. Any disagreement can be attributed to two phenomena. First, \textsc{Matlab}'s integrator uses an adaptive time-step coupled with a higher-order integration scheme. It is thus able to capture the rocket's take-off behavior more accurately. Since the propellant-burning phase heavily influences the maximum altitude achieved, any small inaccuracies from the RK2 method during that phase will throw off the altitude profile from the more-accurate \lstinline|ode45| solution. Second, errors in position are higher than errors in velocity, because errors from the velocity calculations are compounded when estimating the altitude at each time step.
+Agreement of time-histories of rocket velocity and altitude is strong between the 2\nd-order Runge-Kutta method we implemented and \textsc{Matlab}'s own \lstinline|ode45| solver. This holds true both visually and quantitatively, based on \figref{fig:rocket_plots} and Table~\ref{tbl:rocket} respectively. Errors between methods are within 3\% for time, within 1\% for velocity, and within 9\% for altitude.
+
+Any disagreement can be attributed to two phenomena. First, \textsc{Matlab}'s integrator uses an adaptive time-step coupled with a higher-order integration scheme. It is thus able to capture the rocket's take-off behavior more accurately. Since the propellant-burning phase heavily influences the maximum altitude achieved, any small inaccuracies from the RK2 method during that phase will throw off the altitude profile compared to the more-accurate \lstinline|ode45| solution. Second, position errors are more pronounced than velocity errors, because errors from the velocity calculations are compounded when estimating the altitude at each time step.
 
 \subsection{Problem 2}
 
+Differences between the Runge-Kutta methods used are qualitatively small. This is likely due to the stream function $f(\eta)$ having relatively small curvature over the domain of interest. If curvatures were more pronounced, the higher-order method would approximate the solution much more accurately.
+
+The experimental best-fit expression for $f'(\eta)$ matches the velocities $U/U_0$ and $V/V_0$ fairly well, but since it is only an exponential function fit to experimental data, it struggles to capture the true behavior of the governing ODE (which is not \emph{exactly} exponential). All things considered, it does a decent job of matching the normalized velocities, though agreement is not perfect.
+
 \subsection{Problem 3}
 
-Since we are using an RK4 method here, Euler stability analysis is only a guide. If we violate the $h_\tmax$ criterion, numerical instabilities will persist. If not, however, there is still no guarantee the solution will be stable.
+Since we are using an RK4 method instead of an Euler method, Euler stability analysis is only a guide. If we violate the $h_\tmax$ criterion, numerical instabilities will persist. If not, however, there is still no guarantee the solution will be stable. This is borne out in our results (Table~\ref{tbl:prob3}), as the solution with $h=2h_\tmax$ diverges rapidly. Fortunately, using a step size of $h=\tfrac{1}{2}h_\tmax$ does not diverge, and produces a value of $y(10)$ within 35\% of the analytical value. We would likely need to reduce the step size considerably to get below 1\% error, since the governing equation is moderately stiff. This is a situation in which an adaptive step size may be appropriate.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -338,7 +345,6 @@ Since we are using an RK4 method here, Euler stability analysis is only a guide.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 No external references were used other than the course notes for this assignment.
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -349,8 +355,8 @@ No external references were used other than the course notes for this assignment
 The following code listings generate all figures presented in this homework assignment.
 
 \includecode{Problem_1.m}
-
-
+\includecode{Problem_2.m}
+\includecode{Problem_3.m}
 
 %%
 %% DOCUMENT END
